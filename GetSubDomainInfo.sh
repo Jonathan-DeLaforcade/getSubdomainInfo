@@ -2,8 +2,8 @@
 
 NOCOLOR='\033[0m'
 YELLOW='\033[1;33m'
-RED='\033[0;31m'
-GREEN='\033[0;32m'
+RED='\033[1;31m'
+GREEN='\033[1;32m'
 
 init(){
 clear
@@ -20,7 +20,6 @@ echo "                                                                          
 echo "                                                                                      |_______________________|"
 echo ""
 }
-
 
 getWordlist(){
 	if [ -f Subdomain.txt ]; then
@@ -83,7 +82,15 @@ getPorts(){
 	nmap -F $1 | grep "tcp\|udp" | grep "open"
 }
 
+
 init
+if [[ $# -ne 1 ]]; then
+	
+	echo -e "${RED}Vous devez passer le nom de domaine en argument${NOCOLOR}"
+	echo -e "${YELLOW}Exemple: ./GetSubDomainInfo exemple.com${NOCOLOR}"
+	exit 1
+fi 
+
 getWordlist
 echo -en "${YELLOW}\nAdresse IP du domaine ${GREEN}$1${NOCOLOR} : ${NOCOLOR}" && getIP $1
 echo -e "${YELLOW}\nListe des serveurs mails : ${NOCOLOR}" && getMailServers $1
