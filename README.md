@@ -1,8 +1,8 @@
- ___________________________
-|                           |
-|   Get SubDomain Info      |
-|   By Anthony et Jonathan  |
-|___________________________|
+Get SubDomain Info | By Anthony et Jonathan
+
+
+
+
 
 Téléchargement & Execution:
 
