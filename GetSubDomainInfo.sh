@@ -16,7 +16,7 @@ echo " | | |__| |  __/ |_       ____) | |_| | |_) | |__| | (_) | | | | | | (_| |
 echo " |  \_____|\___|\__|     |_____/ \____|____/|_____/ \___/|_| |_| |_|\____|_|_| |_|     |_____|_| |_|_| \___/  |"
 echo " |____________________________________________________________________________________________________________|"
 echo "                                                                                 |                            |"
-echo "                                                                                 | V1.4 By Anthony & Jonathan |"
+echo "                                                                                 | V1.5 By Anthony & Jonathan |"
 echo "                                                                                 |____________________________|"
 echo ""
 }
@@ -102,8 +102,8 @@ getIP(){
 
 getMailServers(){
 
-	MX=$(host -t mx $1 |cut -d' ' -f 7 | sed 's/.$//')
-	echo "$MX"
+	MX=$(host -t mx $1 |cut -d' ' -f 7 | sed 's/.$//' | sed 's/^/\t/')
+	echo -e "$MX"
 
 
 }
@@ -111,20 +111,25 @@ getMailServers(){
 
 getSubdomains(){
 
+	tput sc
 	echo -e "${RED}Attention cela va utiliser une wordlist, si vous voulez continuer appuyez sur 'o'${NOCOLOR}"
 	read reponse
-
+	
+	tput rc
+	tput el
+	tput cud1
+	
 	if [ "$reponse" == "o" ]; then
 		file='./Subdomain.txt'
 
-		while IFS='\n' read -r line; do
+		while read -r line; do
 			ndd="${line}.$1"
 			result=$(nslookup $ndd 2>/dev/null)
 
 			echo $result | grep "can't find" 2>/dev/null > /dev/null
 			if [ $? -eq 1 ]; then
 				IP_subdomain=$(echo $result | rev | cut -d" " -f1 |rev )
-				echo -e "${YELLOW}$ndd: ${NOCOLOR} $IP_subdomain"
+				echo -e "\t${YELLOW}$ndd: ${NOCOLOR} $IP_subdomain"
 			fi
 		done < $file
 	fi
@@ -137,7 +142,7 @@ getSubdomains(){
 
 
 getPorts(){
-	nmap -F $1 | grep "tcp\|udp" | grep "open"
+	nmap -F $1 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
 }
 
 
