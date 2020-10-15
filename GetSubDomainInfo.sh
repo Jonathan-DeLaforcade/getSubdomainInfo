@@ -60,10 +60,10 @@ install_packages(){
 			return 0
 		
 		else
+    
 		echo -e "${YELLOW}Installation des dépendances en cours...${NOCOLOR}"
 		sudo apt update 2>/dev/null > /dev/null && sudo apt install -y dnsutils nmap whois 2>/dev/null > /dev/null
 			if [ $? -eq 0 ]; then
-
 				echo -e "	${GREEN}Dépendances => installées${NOCOLOR}"
 				echo ""
 				return 0
