@@ -24,11 +24,50 @@ echo ""
 install_packages(){
 
 
-
-	sudo apt update && sudo apt install -y dnsutils nmap
-	if [ $? -ne 0 ]; then
+	cat /etc/os-release |grep "arch" 2> /dev/null > /dev/null #Check si l'OS est de type Arch Linux
+	if [ $? -eq 0 ]; then
 		
-		exit 1
+		pacman -Qi dnsutils nmap 2>/dev/null >/dev/null
+		if [ $? -eq 0 ]; then
+			echo -e "	${GREEN}Dependances => OK${NOCOLOR}"
+			return 0
+		
+		else
+
+		sudo pacman --noconfirm -S 'bind' nmap 2>/dev/null >/dev/null
+			if [ $? -eq 0 ]; then
+				
+				echo -e "	${GREEN}Dépendances => installées${NOCOLOR}"
+				return 0
+			else
+				echo -e "${RED}Erreur lors de l'installation des dépendences${NOCOLOR}"
+				exit 1
+			fi
+		fi
+	
+	fi
+
+	cat /etc/os-release |grep "Ubuntu\|debian" 2> /dev/null > /dev/null #Check si l'OS est de type Ubuntu
+	if [ $? -eq 0 ]; then
+		
+		dpkg -l dnsutils nmap 2>/dev/null >/dev/null
+		if [ $? -eq 0 ]; then
+			echo -e "	${GREEN}Dépendances => OK${NOCOLOR}"
+			return 0
+		
+		else
+
+		sudo apt update && sudo apt install dnsutils nmap 2>/dev/null >/dev/null
+			if [ $? -eq 0 ]; then
+				
+				echo -e "	${GREEN}Dépendances => installées${NOCOLOR}"
+				return 0
+			else
+				echo -e "${RED}Erreur lors de l'installation des dépendences${NOCOLOR}"
+				exit 1
+			fi
+		fi
+	
 	fi
 
 
@@ -103,7 +142,7 @@ if [[ $# -ne 1 ]]; then
 	echo -e "${YELLOW}Exemple: ./GetSubDomainInfo exemple.com${NOCOLOR}"
 	exit 1
 fi 
-echo -e "${YELLOW}Installation des packages...${NOCOLOR}" && install_packages
+echo -e "${YELLOW}Verification des dependances...${NOCOLOR}" && install_packages
 getWordlist
 echo -en "${YELLOW}\nAdresse IP du domaine ${GREEN}$1${NOCOLOR} : ${NOCOLOR}" && getIP $1
 echo -e "${YELLOW}\nListe des serveurs mails : ${NOCOLOR}" && getMailServers $1
