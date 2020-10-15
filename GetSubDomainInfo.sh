@@ -26,7 +26,7 @@ install_packages(){
 
 
 	sudo apt install -y dnsutils nmap
-	if [ $? -ne 0 ]
+	if [ $? -ne 0 ]; then
 		
 		exit 1
 	fi
