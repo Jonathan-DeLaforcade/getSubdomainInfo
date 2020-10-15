@@ -29,6 +29,7 @@ install_packages(){
 		
 		pacman -Qi dnsutils nmap whois 2>/dev/null > /dev/null
 		if [ $? -eq 0 ]; then
+			
 			echo -e "	${GREEN}Dependances => OK${NOCOLOR}"
 			return 0
 		
@@ -36,7 +37,7 @@ install_packages(){
 
 		sudo pacman --noconfirm -S 'bind' nmap whois > /dev/null
 			if [ $? -eq 0 ]; then
-				
+				clear
 				echo -e "	${GREEN}Dépendances => installées${NOCOLOR}"
 				return 0
 			else
@@ -52,6 +53,7 @@ install_packages(){
 		
 		dpkg -s dnsutils nmap whois 2>/dev/null > /dev/null
 		if [ $? -eq 0 ]; then
+			
 			echo -e "	${GREEN}Dépendances => OK${NOCOLOR}"
 			return 0
 		
@@ -60,8 +62,8 @@ install_packages(){
 		sudo apt update > /dev/null && sudo apt install -y dnsutils nmap whois > /dev/null
 			if [ $? -eq 0 ]; then
 				
-				echo -e "	${GREEN}Dépendances => installées${NOCOLOR}"
 				clear
+				echo -e "	${GREEN}Dépendances => installées${NOCOLOR}"
 				return 0
 			else
 				echo -e "${RED}Erreur lors de l'installation des dépendences${NOCOLOR}"
