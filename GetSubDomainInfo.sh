@@ -15,9 +15,9 @@ echo " | | | |_ |/ _ \ __|      \___ \| | | | '_ \| |  | |/ _ \| __   _ \ / _  |
 echo " | | |__| |  __/ |_       ____) | |_| | |_) | |__| | (_) | | | | | | (_| | | | | |      _| |_| | | | |  (_) | |"
 echo " |  \_____|\___|\__|     |_____/ \____|____/|_____/ \___/|_| |_| |_|\____|_|_| |_|     |_____|_| |_|_| \___/  |"
 echo " |____________________________________________________________________________________________________________|"
-echo "                                                                                   |                          |"
-echo "                                                                                   | V1 By Anthony & Jonathan |"
-echo "                                                                                   |__________________________|"
+echo "                                                                                 |                            |"
+echo "                                                                                 | V1.3 By Anthony & Jonathan |"
+echo "                                                                                 |____________________________|"
 echo ""
 }
 
@@ -29,7 +29,6 @@ install_packages(){
 		
 		pacman -Qi dnsutils nmap whois 2>/dev/null > /dev/null
 		if [ $? -eq 0 ]; then
-			
 			echo -e "	${GREEN}Dependances => OK${NOCOLOR}"
 			return 0
 		
@@ -53,7 +52,6 @@ install_packages(){
 		
 		dpkg -s dnsutils nmap whois 2>/dev/null > /dev/null
 		if [ $? -eq 0 ]; then
-			
 			echo -e "	${GREEN}Dépendances => OK${NOCOLOR}"
 			return 0
 		
