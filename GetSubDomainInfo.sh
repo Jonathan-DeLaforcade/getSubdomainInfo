@@ -33,11 +33,12 @@ install_packages(){
 			return 0
 		
 		else
-
-		sudo pacman --noconfirm -S 'bind' nmap whois 2>/dev/null > /dev/null
+			echo -e "${YELLOW}Installation des dépendances en cours...${NOCOLOR}"
+			sudo pacman --noconfirm -S 'bind' nmap whois 2>/dev/null > /dev/null
 			if [ $? -eq 0 ]; then
-				clear
+				
 				echo -e "	${GREEN}Dépendances => installées${NOCOLOR}"
+				echo ""
 				return 0
 			
 			else
@@ -50,18 +51,21 @@ install_packages(){
 
 	cat /etc/os-release |grep "Ubuntu\|debian" 2> /dev/null > /dev/null #Check si l'OS est de type Ubuntu
 	if [ $? -eq 0 ]; then
-		
+
 		dpkg -s dnsutils nmap whois 2>/dev/null > /dev/null
 		if [ $? -eq 0 ]; then
 			
 			echo -e "	${GREEN}Dépendances => OK${NOCOLOR}"
+			echo ""
 			return 0
 		
 		else
     
+		echo -e "${YELLOW}Installation des dépendances en cours...${NOCOLOR}"
 		sudo apt update 2>/dev/null > /dev/null && sudo apt install -y dnsutils nmap whois 2>/dev/null > /dev/null
 			if [ $? -eq 0 ]; then
 				echo -e "	${GREEN}Dépendances => installées${NOCOLOR}"
+				echo ""
 				return 0
 			else
 				echo -e "${RED}Erreur lors de l'installation des dépendences${NOCOLOR}"
