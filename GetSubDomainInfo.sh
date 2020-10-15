@@ -57,7 +57,7 @@ install_packages(){
 		
 		else
 
-		sudo apt update && sudo apt install dnsutils nmap 2>/dev/null >/dev/null
+		sudo apt update && sudo apt install -y dnsutils nmap 2>/dev/null >/dev/null
 			if [ $? -eq 0 ]; then
 				
 				echo -e "	${GREEN}Dépendances => installées${NOCOLOR}"
