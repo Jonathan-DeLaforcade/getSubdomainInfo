@@ -104,7 +104,7 @@ if [[ $# -ne 1 ]]; then
 	echo -e "${YELLOW}Exemple: ./GetSubDomainInfo exemple.com${NOCOLOR}"
 	exit 1
 fi 
-echo -e "${YELLOW}Installation des packages...${NOCOLOR} && install_packages
+echo -e "${YELLOW}Installation des packages...${NOCOLOR}" && install_packages
 getWordlist
 echo -en "${YELLOW}\nAdresse IP du domaine ${GREEN}$1${NOCOLOR} : ${NOCOLOR}" && getIP $1
 echo -e "${YELLOW}\nListe des serveurs mails : ${NOCOLOR}" && getMailServers $1
