@@ -34,11 +34,12 @@ install_packages(){
 		
 		else
 
-		sudo pacman --noconfirm -S 'bind' nmap whois > /dev/null
+		sudo pacman --noconfirm -S 'bind' nmap whois 2>/dev/null > /dev/null
 			if [ $? -eq 0 ]; then
-				clear
+				
 				echo -e "	${GREEN}Dépendances => installées${NOCOLOR}"
 				return 0
+			
 			else
 				echo -e "${RED}Erreur lors de l'installation des dépendences${NOCOLOR}"
 				exit 1
@@ -52,15 +53,15 @@ install_packages(){
 		
 		dpkg -s dnsutils nmap whois 2>/dev/null > /dev/null
 		if [ $? -eq 0 ]; then
+			
 			echo -e "	${GREEN}Dépendances => OK${NOCOLOR}"
 			return 0
 		
 		else
 
-		sudo apt update > /dev/null && sudo apt install -y dnsutils nmap whois > /dev/null
+		sudo apt update 2>/dev/null > /dev/null && sudo apt install -y dnsutils nmap whois 2>/dev/null > /dev/null
 			if [ $? -eq 0 ]; then
-				
-				clear
+
 				echo -e "	${GREEN}Dépendances => installées${NOCOLOR}"
 				return 0
 			else
@@ -106,7 +107,7 @@ getMailServers(){
 
 getSubdomains(){
 
-	echo -e "${RED}attention cela va utiliser une wordlist, si vous voulez continuer appuyez sur o${NOCOLOR}"
+	echo -e "${RED}Attention cela va utiliser une wordlist, si vous voulez continuer appuyez sur 'o'${NOCOLOR}"
 	read reponse
 
 	if [ "$reponse" == "o" ]; then
