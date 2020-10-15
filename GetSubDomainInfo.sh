@@ -34,7 +34,6 @@ install_packages(){
 
 }
 
-
 getWordlist(){
 	if [ -f Subdomain.txt ]; then
 		echo -e "${YELLOW}Mise a jour de la wordlist...${NOCOLOR}"
