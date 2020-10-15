@@ -21,6 +21,19 @@ echo "                                                                          
 echo ""
 }
 
+install_packages(){
+
+
+
+	sudo apt install -y dnsutils nmap
+	if [ $? -ne 0 ]
+		exit 1
+	fi
+
+
+}
+
+
 getWordlist(){
 	if [ -f Subdomain.txt ]; then
 		echo -e "${YELLOW}Mise a jour de la wordlist...${NOCOLOR}"
@@ -90,7 +103,7 @@ if [[ $# -ne 1 ]]; then
 	echo -e "${YELLOW}Exemple: ./GetSubDomainInfo exemple.com${NOCOLOR}"
 	exit 1
 fi 
-
+echo -e "${YELLOW}Installation des packages...${NOCOLOR} && install_packages
 getWordlist
 echo -en "${YELLOW}\nAdresse IP du domaine ${GREEN}$1${NOCOLOR} : ${NOCOLOR}" && getIP $1
 echo -e "${YELLOW}\nListe des serveurs mails : ${NOCOLOR}" && getMailServers $1
