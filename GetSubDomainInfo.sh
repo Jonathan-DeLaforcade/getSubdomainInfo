@@ -30,6 +30,7 @@ install_packages(){
 		pacman -Qi dnsutils nmap whois 2>/dev/null > /dev/null
 		if [ $? -eq 0 ]; then
 			echo -e "	${GREEN}Dependances => OK${NOCOLOR}"
+			echo ""
 			return 0
 		
 		else
