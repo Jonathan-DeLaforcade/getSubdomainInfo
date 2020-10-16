@@ -115,7 +115,7 @@ getIP(){
 
 getMailServers(){
 
-	MX=$(host -t mx $1 |cut -d' ' -f 7 | sed 's/.$//' | sed -E 's/^/\t/')
+	MX=$(host -t mx $1 |cut -d' ' -f 7 | sed 's/.$//' | sed 's/^/\t/')
 	echo "$MX"
 
 
@@ -207,4 +207,4 @@ getWordlist
 echo -en "${YELLOW}\nRésolution de ${GREEN}$1${NOCOLOR}" && getIP $1 && locateIP
 echo -e "${YELLOW}\nListe des serveurs mails : ${NOCOLOR}" && getMailServers $1
 echo -e "${YELLOW}\nListe des ports ouvert : ${NOCOLOR}" && getPorts $IP
-echo -e "${YELLOW}\nSous domaines pour ${GREEN}$1${NOCOLOR} : ${NOCOLOR}" && getSubdomains $IP
+echo -e "${YELLOW}\nSous domaines pour ${GREEN}$1${NOCOLOR} : ${NOCOLOR}" && getSubdomains $1
