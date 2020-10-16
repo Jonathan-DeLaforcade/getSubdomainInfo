@@ -95,15 +95,28 @@ getWordlist(){
 
 getIP(){
 
-	IP=$(nslookup $1 | tail -2 | cut -d' ' -f 2)
-	echo $IP
+	IP=$(timeout --foreground 5 nslookup $1 | tail -2 | cut -d' ' -f 2)
+	if [ -z "$IP" ]; then
+		echo ""
+		echo -e "${RED}Impossible d'obtenir l'IP${NOCOLOR}"
+		exit 1
+	elif [[ $IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+		echo ""
+		echo -e "	${GREEN}[+]${NOCOLOR} IP : $IP"
+		return 0
+	elif [[ ! $IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+		ipv6=1
+		echo ""
+		echo -e "	${GREEN}[+]${NOCOLOR} IP : $IP"
+		return 0
+	fi
 
 }
 
 getMailServers(){
 
-	MX=$(host -t mx $1 |cut -d' ' -f 7 | sed 's/.$//' | sed 's/^/\t/')
-	echo -e "$MX"
+	MX=$(host -t mx $1 |cut -d' ' -f 7 | sed 's/.$//' | sed -E 's/^/\t/')
+	echo "$MX"
 
 
 }
@@ -142,8 +155,44 @@ getSubdomains(){
 
 
 getPorts(){
-	nmap -F $1 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
+
+	if [ "$ipv6" != 1 ]; then
+		nmap -F $1 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
+	
+	elif [ "$ipv6" == 1 ]; then
+		nmap -6 -F $1 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
+	fi
 }
+
+
+locateIP(){
+
+	localisation=$(timeout --foreground 5 curl -s http://ip-api.com/json/$IP)
+	
+	if [ "$localisation" != *"fail"* ]; then
+		localisation=$(echo $localisation | grep -Eo "city.*" | cut -d'"' -f 3)
+
+			if [ -z "$localisation" ]; then
+				
+				echo -en "	${RED}[-]${NOCOLOR} Localisation indisponible"
+				echo ""
+				return 0
+
+			else
+				echo -e "	${GREEN}[+]${NOCOLOR} Localisation : $localisation"
+				echo ""
+				return 0
+			fi
+	else
+		return 1
+	fi
+	
+}
+
+
+
+
+
 
 
 init
@@ -155,7 +204,7 @@ if [[ $# -ne 1 ]]; then
 fi 
 echo -e "${YELLOW}Verification des dependances...${NOCOLOR}" && install_packages
 getWordlist
-echo -en "${YELLOW}\nAdresse IP du domaine ${GREEN}$1${NOCOLOR} : ${NOCOLOR}" && getIP $1
+echo -en "${YELLOW}\nRésolution de ${GREEN}$1${NOCOLOR}" && getIP $1 && locateIP
 echo -e "${YELLOW}\nListe des serveurs mails : ${NOCOLOR}" && getMailServers $1
-echo -e "${YELLOW}\nListe des ports ouvert : ${NOCOLOR}" && getPorts $1
-echo -e "${YELLOW}\nSous domaines pour ${GREEN}$1${NOCOLOR} : ${NOCOLOR}" && getSubdomains $1
+echo -e "${YELLOW}\nListe des ports ouvert : ${NOCOLOR}" && getPorts $IP
+echo -e "${YELLOW}\nSous domaines pour ${GREEN}$1${NOCOLOR} : ${NOCOLOR}" && getSubdomains $IP
