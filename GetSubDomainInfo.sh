@@ -127,11 +127,10 @@ getSubdomains(){
 	tput sc
 	echo -e "${RED}Attention cela va utiliser une wordlist, si vous voulez continuer appuyez sur 'o'${NOCOLOR}"
 	read reponse
-	
-	tput rc
+	tput cuu1
 	tput el
-	tput cud1
-	
+	tput cuu1
+	tput el
 	if [ "$reponse" == "o" ]; then
 		file='./Subdomain.txt'
 
