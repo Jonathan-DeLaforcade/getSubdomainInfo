@@ -173,13 +173,11 @@ locateIP(){
 
 			if [ -z "$localisation" ]; then
 				
-				echo -en "	${RED}[-]${NOCOLOR} Localisation indisponible"
-				echo ""
+				echo -e "	${RED}[-]${NOCOLOR} Localisation indisponible"
 				return 0
 
 			else
 				echo -e "	${GREEN}[+]${NOCOLOR} Localisation : $localisation"
-				echo ""
 				return 0
 			fi
 	else
