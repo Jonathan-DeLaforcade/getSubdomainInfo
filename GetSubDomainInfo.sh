@@ -102,9 +102,18 @@ getIPandLocate(){
 		do
 			localisation=$(timeout --foreground 5 curl -s http://ip-api.com/json/$IPV4)
 			localisation=$(echo $localisation | grep -Eo "city.*" | cut -d'"' -f 3)
-			if [ "$localisation" != *"fail"* ]; then
-				echo -e "	${GREEN}[+]${NOCOLOR} IPV4 : $IPV4"
-				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : $localisation"
+			echo -e "	${GREEN}[+]${NOCOLOR} IPV4 : $IPV4"
+			
+			if [ "$localisation" == *"fail"* ]; then
+				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${RED}Indisponible${NOCOLOR}"
+				echo ""
+				
+			elif [ "$localisation" == "" ]; then
+				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${RED}Indisponible${NOCOLOR}"
+				echo ""
+			
+			else
+				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${GREEN}$localisation${NOCOLOR}"
 				echo ""
 			fi
 
@@ -114,12 +123,20 @@ getIPandLocate(){
 		do
 			localisation=$(timeout --foreground 5 curl -s http://ip-api.com/json/$IPV6)
 			localisation=$(echo $localisation | grep -Eo "city.*" | cut -d'"' -f 3)
-			if [ "$localisation" != *"fail"* ]; then
-				echo -e "	${GREEN}[+]${NOCOLOR} IPV6 : $IPV6"
-				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : $localisation"
+			echo -e "	${GREEN}[+]${NOCOLOR} IPV6 : $IPV6"
+			
+			if [ "$localisation" == *"fail"* ]; then
+				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${RED}Indisponible${NOCOLOR}"
+				echo ""
+				
+			elif [ "$localisation" == "" ]; then
+				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${RED}Indisponible${NOCOLOR}"
+				echo ""
+			
+			else
+				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${GREEN}$localisation${NOCOLOR}"
 				echo ""
 			fi
-
 		done
 }
 
