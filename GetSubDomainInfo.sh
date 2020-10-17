@@ -178,7 +178,6 @@ getPorts(){
 			echo ""
 		done
 
-
 }
 
 
