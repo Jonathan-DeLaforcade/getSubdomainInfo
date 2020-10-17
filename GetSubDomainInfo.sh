@@ -16,7 +16,7 @@ echo " | | |__| |  __/ |_       ____) | |_| | |_) | |__| | (_) | | | | | | (_| |
 echo " |  \_____|\___|\__|     |_____/ \____|____/|_____/ \___/|_| |_| |_|\____|_|_| |_|     |_____|_| |_|_| \___/  |"
 echo " |____________________________________________________________________________________________________________|"
 echo "                                                                                 |                            |"
-echo "                                                                                 | V1.6 By Anthony & Jonathan |"
+echo "                                                                                 | V1.7 By Anthony & Jonathan |"
 echo "                                                                                 |____________________________|"
 echo ""
 }
@@ -93,24 +93,34 @@ getWordlist(){
 	fi
 }
 
-getIP(){
+getIPandLocate(){
+	echo ""
+	Liste_IPV4=($(nslookup $1 |grep "Address" |cut -d' ' -f2 | grep -E "(([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$))"))
+	Liste_IPV6=($(nslookup $1 |grep "Address" |cut -d' ' -f2 | grep -E "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))"))
+	
+	for IPV4 in "${Liste_IPV4[@]}"
+		do
+			localisation=$(timeout --foreground 5 curl -s http://ip-api.com/json/$IPV4)
+			localisation=$(echo $localisation | grep -Eo "city.*" | cut -d'"' -f 3)
+			if [ "$localisation" != *"fail"* ]; then
+				echo -e "	${GREEN}[+]${NOCOLOR} IPV4 : $IPV4"
+				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : $localisation"
+				echo ""
+			fi
 
-	IP=$(timeout --foreground 5 nslookup $1 | tail -2 | cut -d' ' -f 2)
-	if [[ $IP =~ ((^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$)) ]]; then
-		echo ""
-		echo -e "	${GREEN}[+]${NOCOLOR} IP : $IP"
-		return 0
-	elif [[ $IP =~ (([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])) ]]; then
-		ipv6=1
-		echo ""
-		echo -e "	${GREEN}[+]${NOCOLOR} IP : $IP"
-		return 0
-	else
-		echo ""
-		echo -e "${RED}Impossible d'obtenir l'IP${NOCOLOR}"
-		exit 1
-	fi
+		done
 
+	for IPV6 in "${Liste_IPV6[@]}"
+		do
+			localisation=$(timeout --foreground 5 curl -s http://ip-api.com/json/$IPV6)
+			localisation=$(echo $localisation | grep -Eo "city.*" | cut -d'"' -f 3)
+			if [ "$localisation" != *"fail"* ]; then
+				echo -e "	${GREEN}[+]${NOCOLOR} IPV6 : $IPV6"
+				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : $localisation"
+				echo ""
+			fi
+
+		done
 }
 
 getMailServers(){
@@ -155,43 +165,21 @@ getSubdomains(){
 
 getPorts(){
 
-	if [ "$ipv6" != 1 ]; then
-		nmap -F $1 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
-	
-	elif [ "$ipv6" == 1 ]; then
-		nmap -6 -F $1 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
-	fi
+	for IPV4 in "${Liste_IPV4[@]}"
+		do
+			
+			echo -e "${GREEN}[+]${NOCOLOR} nmap pour l'IP : ${GREEN}${IPV4}${NOCOLOR}" && nmap -F $IPV4 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
+			echo ""
+		done
+
+	for IPV6 in "${Liste_IPV6[@]}"
+		do
+			echo -e "${GREEN}[+]${NOCOLOR} nmap pour l'IP : ${GREEN}${IPV6}${NOCOLOR}" && nmap -6F $IPV6 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
+			echo ""
+		done
+
+
 }
-
-
-locateIP(){
-
-	localisation=$(timeout --foreground 5 curl -s http://ip-api.com/json/$IP)
-	
-	if [ "$localisation" != *"fail"* ]; then
-		localisation=$(echo $localisation | grep -Eo "city.*" | cut -d'"' -f 3)
-
-			if [ -z "$localisation" ]; then
-				
-				echo -en "	${RED}[-]${NOCOLOR} Localisation indisponible"
-				echo ""
-				return 0
-
-			else
-				echo -e "	${GREEN}[+]${NOCOLOR} Localisation : $localisation"
-				echo ""
-				return 0
-			fi
-	else
-		return 1
-	fi
-	
-}
-
-
-
-
-
 
 
 init
@@ -203,7 +191,7 @@ if [[ $# -ne 1 ]]; then
 fi 
 echo -e "${YELLOW}Verification des dependances...${NOCOLOR}" && install_packages
 getWordlist
-echo -en "${YELLOW}\nRésolution de ${GREEN}$1${NOCOLOR}" && getIP $1 && locateIP
+echo -en "${YELLOW}\nRésolution de ${GREEN}$1${NOCOLOR}" && getIPandLocate $1
 echo -e "${YELLOW}\nListe des serveurs mails : ${NOCOLOR}" && getMailServers $1
-echo -e "${YELLOW}\nListe des ports ouvert : ${NOCOLOR}" && getPorts $IP
+echo -e "${YELLOW}\nListe des ports ouvert : ${NOCOLOR}" && getPorts $IPV4 $IPV6
 echo -e "${YELLOW}\nSous domaines pour ${GREEN}$1${NOCOLOR} : ${NOCOLOR}" && getSubdomains $1
