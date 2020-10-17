@@ -171,13 +171,13 @@ getPorts(){
 	for IPV4 in "${Liste_IPV4[@]}"
 		do
 			
-			echo -e "${GREEN}[+]${NOCOLOR} Ports ouverts sur l'IP : ${GREEN}${IPV4}${NOCOLOR}" && nmap -F $IPV4 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
+			echo -e "${GREEN}[+]${NOCOLOR} Ports ouverts sur l'IP ${GREEN}${IPV4}${NOCOLOR} : " && nmap -F $IPV4 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
 			echo ""
 		done
 
 	for IPV6 in "${Liste_IPV6[@]}"
 		do
-			echo -e "${GREEN}[+]${NOCOLOR} Ports ouverts sur l'IP : ${GREEN}${IPV6}${NOCOLOR}" && nmap -6F $IPV6 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
+			echo -e "${GREEN}[+]${NOCOLOR} Ports ouverts sur l'IP ${GREEN}${IPV6}${NOCOLOR} : " && nmap -6F $IPV6 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
 			echo ""
 		done
 
