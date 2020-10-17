@@ -135,7 +135,7 @@ getMailServers(){
 getSubdomains(){
 
 	tput sc
-	echo -e "${RED}Attention cela va utiliser une wordlist, si vous voulez continuer appuyez sur 'o'${NOCOLOR}"
+	echo -e "${RED}Attention, une wordlist va être utilisée. Souhaitez-vous continuer ? ${YELLOW}(o/n)${NOCOLOR}"
 	read reponse
 	tput cuu1
 	tput el
@@ -154,6 +154,9 @@ getSubdomains(){
 				echo -e "\t${YELLOW}$ndd: ${NOCOLOR} $IP_subdomain"
 			fi
 		done < $file
+	else
+		echo -e "	${RED}Scan des sous domaines annulé${NOCOLOR}"
+		return 0
 	fi
 
 
