@@ -168,13 +168,13 @@ getPorts(){
 	for IPV4 in "${Liste_IPV4[@]}"
 		do
 			
-			echo -e "${GREEN}[+]${NOCOLOR} nmap pour l'IP : ${GREEN}${IPV4}${NOCOLOR}" && nmap -F $IPV4 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
+			echo -e "${GREEN}[+]${NOCOLOR} Ports ouverts sur l'IP : ${GREEN}${IPV4}${NOCOLOR}" && nmap -F $IPV4 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
 			echo ""
 		done
 
 	for IPV6 in "${Liste_IPV6[@]}"
 		do
-			echo -e "${GREEN}[+]${NOCOLOR} nmap pour l'IP : ${GREEN}${IPV6}${NOCOLOR}" && nmap -6F $IPV6 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
+			echo -e "${GREEN}[+]${NOCOLOR} Ports ouverts sur l'IP : ${GREEN}${IPV6}${NOCOLOR}" && nmap -6F $IPV6 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
 			echo ""
 		done
 
@@ -190,7 +190,7 @@ if [[ $# -ne 1 ]]; then
 fi 
 echo -e "${YELLOW}Verification des dependances...${NOCOLOR}" && install_packages
 getWordlist
-echo -en "${YELLOW}\nRésolution de ${GREEN}$1${NOCOLOR}" && getIPandLocate $1
+echo -en "${YELLOW}\nRésolution DNS de ${GREEN}$1${NOCOLOR}..." && getIPandLocate $1
 echo -e "${YELLOW}\nListe des serveurs mails : ${NOCOLOR}" && getMailServers $1
 echo -e "${YELLOW}\nListe des ports ouvert : ${NOCOLOR}" && getPorts $IPV4 $IPV6
 echo -e "${YELLOW}\nSous domaines pour ${GREEN}$1${NOCOLOR} : ${NOCOLOR}" && getSubdomains $1
