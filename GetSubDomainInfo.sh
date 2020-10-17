@@ -190,7 +190,7 @@ if [[ $# -ne 1 ]]; then
 fi 
 echo -e "${YELLOW}Verification des dependances...${NOCOLOR}" && install_packages
 getWordlist
-echo -en "${YELLOW}\nRésolution DNS de ${GREEN}$1${NOCOLOR}..." && getIPandLocate $1
+echo -en "${YELLOW}\nRésolution DNS de ${GREEN}$1${NOCOLOR}${YELLOW}...${NOCOLOR}" && getIPandLocate $1
 echo -e "${YELLOW}\nListe des serveurs mails : ${NOCOLOR}" && getMailServers $1
 echo -e "${YELLOW}\nListe des ports ouvert : ${NOCOLOR}" && getPorts $IPV4 $IPV6
 echo -e "${YELLOW}\nSous domaines pour ${GREEN}$1${NOCOLOR} : ${NOCOLOR}" && getSubdomains $1
