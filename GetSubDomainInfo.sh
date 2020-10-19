@@ -16,66 +16,71 @@ echo " | | |__| |  __/ |_       ____) | |_| | |_) | |__| | (_) | | | | | | (_| |
 echo " |  \_____|\___|\__|     |_____/ \____|____/|_____/ \___/|_| |_| |_|\____|_|_| |_|     |_____|_| |_|_| \___/  |"
 echo " |____________________________________________________________________________________________________________|"
 echo "                                                                                 |                            |"
-echo "                                                                                 | V1.5 By Anthony & Jonathan |"
+echo "                                                                                 | V1.8 By Anthony & Jonathan |"
 echo "                                                                                 |____________________________|"
 echo ""
 }
 
 install_packages(){
 
-
-	cat /etc/os-release |grep "arch" 2> /dev/null > /dev/null #Check si l'OS est de type Arch Linux
-	if [ $? -eq 0 ]; then
-		
-		pacman -Qi dnsutils nmap whois 2>/dev/null > /dev/null
-		if [ $? -eq 0 ]; then
-			echo -e "	${GREEN}Dependances => OK${NOCOLOR}"
-			echo ""
-			return 0
-		
-		else
-			echo -e "${YELLOW}Installation des dépendances en cours...${NOCOLOR}"
-			sudo pacman --noconfirm -S 'bind' nmap whois 2>/dev/null > /dev/null
-			if [ $? -eq 0 ]; then
-				
-				echo -e "	${GREEN}Dépendances => installées${NOCOLOR}"
-				echo ""
-				return 0
-			
-			else
-				echo -e "${RED}Erreur lors de l'installation des dépendences${NOCOLOR}"
-				exit 1
-			fi
-		fi
+	YUM_PM=$(which yum 2>/dev/null)
+  	APT_PM=$(which apt-get 2>/dev/null)
+  	PACMAN_PM=$(which pacman 2>/dev/null)
+	ARCH=$(lscpu -J |grep "Architecture" |cut -d'"' -f 8)
+	WHOIS_PKG="whois"
+	CHECK_ANDROID=$(uname -a |cut -d' ' -f 14)
+	CHECK_COMMAND=""
+	INSTALL_COMMAND=""	
 	
+	if [[ ! -z $YUM_PM ]]; then
+		echo "YUM NOT SUPPORTED"
+		exit 1
+    	
+	elif [[ ! -z $APT_PM ]]; then
+
+		CHECK_COMMAND="dpkg -s dnsutils nmap $WHOIS_PKG 2>/dev/null > /dev/null"
+		INSTALL_COMMAND="sudo apt update 2>/dev/null > /dev/null && sudo apt install -y dnsutils nmap $WHOIS_PKG 2>/dev/null > /dev/null"
+
+	elif [[ ! -z $PACMAN_PM ]]; then
+		
+		CHECK_COMMAND="pacman -Qi dnsutils nmap $WHOIS_PKG 2>/dev/null > /dev/null"
+		INSTALL_COMMAND="sudo pacman -S --noconfirm dnsutils nmap $WHOIS_PKG 2>/dev/null > /dev/null"
+
+    fi
+
+	if [ "$ARCH" == "aarch64" ] && [ "$CHECK_ANDROID" == "Android" ]; then # Permet de rendre les appareils Android sous Termux compatibles
+		
+		WHOIS_PKG="inetutils"
+		CHECK_COMMAND="dpkg -s dnsutils nmap $WHOIS_PKG 2>/dev/null > /dev/null"
+		INSTALL_COMMAND="apt update && apt install -y dnsutils nmap $WHOIS_PKG 2>/dev/null > /dev/null"
+		echo $INSTALL_COMMAND
+
+
 	fi
 
-	cat /etc/os-release |grep "Ubuntu\|debian" 2> /dev/null > /dev/null #Check si l'OS est de type Ubuntu
-	if [ $? -eq 0 ]; then
 
-		dpkg -s dnsutils nmap whois 2>/dev/null > /dev/null
-		if [ $? -eq 0 ]; then
+
+	eval $CHECK_COMMAND
+	if [ $? -eq 0 ]; then
 			
-			echo -e "	${GREEN}Dépendances => OK${NOCOLOR}"
-			echo ""
-			return 0
+		echo -e "	${GREEN}Dépendances => OK${NOCOLOR}"
+		echo ""
+		return 0
 		
-		else
-    
+	else
+		
 		echo -e "${YELLOW}Installation des dépendances en cours...${NOCOLOR}"
-		sudo apt update 2>/dev/null > /dev/null && sudo apt install -y dnsutils nmap whois 2>/dev/null > /dev/null
-			if [ $? -eq 0 ]; then
-				echo -e "	${GREEN}Dépendances => installées${NOCOLOR}"
-				echo ""
-				return 0
-			else
-				echo -e "${RED}Erreur lors de l'installation des dépendences${NOCOLOR}"
-				exit 1
-			fi
-		fi
-	
-	fi
 
+		eval $INSTALL_COMMAND
+		if [ $? -eq 0 ]; then
+			echo -e "	${GREEN}Dépendances => installées${NOCOLOR}"
+			echo ""
+			return 0
+		else
+			echo -e "${RED}Erreur lors de l'installation des dépendences${NOCOLOR}"
+			exit 1
+		fi
+	fi
 
 }
 
@@ -93,17 +98,57 @@ getWordlist(){
 	fi
 }
 
-getIP(){
+getIPandLocate(){
+	echo ""
+	Liste_IPV4=($(nslookup $1 |grep "Address" |cut -d' ' -f2 | grep -E "(([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$))"))
+	Liste_IPV6=($(nslookup $1 |grep "Address" |cut -d' ' -f2 | grep -E "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))"))
+	echo ""
+	for IPV4 in "${Liste_IPV4[@]}"
+		do
+			localisation=$(timeout --foreground 5 curl -s http://ip-api.com/json/$IPV4)
+			localisation=$(echo $localisation | grep -Eo "city.*" | cut -d'"' -f 3)
+			echo -e "	${GREEN}[+]${NOCOLOR} IPV4 : ${GREEN}$IPV4${NOCOLOR}"
+			
+			if [ "$localisation" == *"fail"* ]; then
+				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${RED}Indisponible${NOCOLOR}"
+				echo ""
+				
+			elif [ "$localisation" == "" ]; then
+				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${RED}Indisponible${NOCOLOR}"
+				echo ""
+			
+			else
+				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${GREEN}$localisation${NOCOLOR}"
+				echo ""
+			fi
 
-	IP=$(nslookup $1 | tail -2 | cut -d' ' -f 2)
-	echo $IP
+		done
 
+	for IPV6 in "${Liste_IPV6[@]}"
+		do
+			localisation=$(timeout --foreground 5 curl -s http://ip-api.com/json/$IPV6)
+			localisation=$(echo $localisation | grep -Eo "city.*" | cut -d'"' -f 3)
+			echo -e "	${GREEN}[+]${NOCOLOR} IPV6 : ${GREEN}$IPV6${NOCOLOR}"
+			
+			if [ "$localisation" == *"fail"* ]; then
+				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${RED}Indisponible${NOCOLOR}"
+				echo ""
+				
+			elif [ "$localisation" == "" ]; then
+				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${RED}Indisponible${NOCOLOR}"
+				echo ""
+			
+			else
+				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${GREEN}$localisation${NOCOLOR}"
+				echo ""
+			fi
+		done
 }
 
 getMailServers(){
 
 	MX=$(host -t mx $1 |cut -d' ' -f 7 | sed 's/.$//' | sed 's/^/\t/')
-	echo -e "$MX"
+	echo "$MX"
 
 
 }
@@ -112,13 +157,12 @@ getMailServers(){
 getSubdomains(){
 
 	tput sc
-	echo -e "${RED}Attention cela va utiliser une wordlist, si vous voulez continuer appuyez sur 'o'${NOCOLOR}"
+	echo -e "${RED}Attention, une wordlist va être utilisée. Souhaitez-vous continuer ? ${YELLOW}(o/n)${NOCOLOR}"
 	read reponse
-	
-	tput rc
+	tput cuu1
 	tput el
-	tput cud1
-	
+	tput cuu1
+	tput el
 	if [ "$reponse" == "o" ]; then
 		file='./Subdomain.txt'
 
@@ -132,6 +176,9 @@ getSubdomains(){
 				echo -e "\t${YELLOW}$ndd: ${NOCOLOR} $IP_subdomain"
 			fi
 		done < $file
+	else
+		echo -e "	${RED}Scan des sous domaines annulé${NOCOLOR}"
+		return 0
 	fi
 
 
@@ -142,7 +189,20 @@ getSubdomains(){
 
 
 getPorts(){
-	nmap -F $1 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
+
+	for IPV4 in "${Liste_IPV4[@]}"
+		do
+			
+			echo -e "${GREEN}[+]${NOCOLOR} Ports ouverts sur l'IP ${GREEN}${IPV4}${NOCOLOR} : " && nmap -F $IPV4 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
+			echo ""
+		done
+
+	for IPV6 in "${Liste_IPV6[@]}"
+		do
+			echo -e "${GREEN}[+]${NOCOLOR} Ports ouverts sur l'IP ${GREEN}${IPV6}${NOCOLOR} : " && nmap -6F $IPV6 | grep "tcp\|udp" | grep "open" | sed 's/^/\t/'
+			echo ""
+		done
+
 }
 
 
@@ -155,7 +215,7 @@ if [[ $# -ne 1 ]]; then
 fi 
 echo -e "${YELLOW}Verification des dependances...${NOCOLOR}" && install_packages
 getWordlist
-echo -en "${YELLOW}\nAdresse IP du domaine ${GREEN}$1${NOCOLOR} : ${NOCOLOR}" && getIP $1
+echo -en "${YELLOW}\nRésolution DNS de ${GREEN}$1${NOCOLOR}${YELLOW}...${NOCOLOR}" && getIPandLocate $1
 echo -e "${YELLOW}\nListe des serveurs mails : ${NOCOLOR}" && getMailServers $1
-echo -e "${YELLOW}\nListe des ports ouvert : ${NOCOLOR}" && getPorts $1
+echo -e "${YELLOW}\nListe des ports ouvert : ${NOCOLOR}" && getPorts $IPV4 $IPV6
 echo -e "${YELLOW}\nSous domaines pour ${GREEN}$1${NOCOLOR} : ${NOCOLOR}" && getSubdomains $1
