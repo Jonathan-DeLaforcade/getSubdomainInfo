@@ -21,6 +21,7 @@ echo "                                                                          
 echo ""
 }
 
+
 install_packages(){
 
 	YUM_PM=$(which yum 2>/dev/null)
