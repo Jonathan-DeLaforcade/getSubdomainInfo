@@ -47,10 +47,10 @@ install_packages(){
 		CHECK_COMMAND="pacman -Qi $PACKAGE_LIST 2>/dev/null > /dev/null"
 		INSTALL_COMMAND="sudo pacman -S --noconfirm $PACKAGE_LIST 2>/dev/null > /dev/null"
 		
-    fi
+    	fi
 
 	if [ "$ARCH" == "aarch64" ] && [ "$CHECK_ANDROID" == "Android" ]; then # Permet de rendre les appareils Android sous Termux compatibles
-		PACKAGE_LIST="dnsutils nmap inetutils"
+		PACKAGE_LIST="dnsutils nmap inetutils ncurses-utils"
 		CHECK_COMMAND="dpkg -s $PACKAGE_LIST 2>/dev/null > /dev/null"
 		INSTALL_COMMAND="apt update 2>/dev/null > /dev/null && apt install -y $PACKAGE_LIST 2>/dev/null > /dev/null"
 
