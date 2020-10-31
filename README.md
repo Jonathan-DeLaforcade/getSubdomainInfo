@@ -6,7 +6,7 @@ Get SubDomain Info | By Anthony et Jonathan
 
     - chmod a+x GetSubDomainInfo.sh 
 
-    - ./GetSubDomainInfo.sh <Domain>
+    - ./GetSubDomainInfo.sh `<Domain>`
 
 
 History Version :
