@@ -28,40 +28,38 @@ install_packages(){
   	APT_PM=$(which apt-get 2>/dev/null)
   	PACMAN_PM=$(which pacman 2>/dev/null)
 	ARCH=$(lscpu -J |grep "Architecture" |cut -d'"' -f 8)
-	WHOIS_PKG="whois"
-	CHECK_ANDROID=$(uname -a |cut -d' ' -f 14)
-	CHECK_COMMAND=""
-	INSTALL_COMMAND=""	
 	
-	if [[ ! -z $YUM_PM ]]; then
+	PACKAGE_LIST="dnsutils nmap whois"
+	
+	CHECK_ANDROID=$(uname -a |cut -d' ' -f 14)
+	
+	if [[ ! -z $YUM_PM ]]; then #Check si le gestionnaire de paquet est YUM
 		echo "YUM NOT SUPPORTED"
 		exit 1
     	
-	elif [[ ! -z $APT_PM ]]; then
-
-		CHECK_COMMAND="dpkg -s dnsutils nmap $WHOIS_PKG 2>/dev/null > /dev/null"
-		INSTALL_COMMAND="sudo apt update 2>/dev/null > /dev/null && sudo apt install -y dnsutils nmap $WHOIS_PKG 2>/dev/null > /dev/null"
-
-	elif [[ ! -z $PACMAN_PM ]]; then
+	elif [[ ! -z $APT_PM ]]; then #Check si le gestionnaire de paquet est APT
 		
-		CHECK_COMMAND="pacman -Qi dnsutils nmap $WHOIS_PKG 2>/dev/null > /dev/null"
-		INSTALL_COMMAND="sudo pacman -S --noconfirm dnsutils nmap $WHOIS_PKG 2>/dev/null > /dev/null"
-
-    fi
+		CHECK_COMMAND="dpkg -s $PACKAGE_LIST 2>/dev/null > /dev/null"
+		INSTALL_COMMAND="sudo apt update 2>/dev/null > /dev/null && sudo apt install -y $PACKAGE_LIST 2>/dev/null > /dev/null"
+		
+	elif [[ ! -z $PACMAN_PM ]]; then #Check si le gestionnaire de paquet est PACMAN
+		
+		CHECK_COMMAND="pacman -Qi $PACKAGE_LIST 2>/dev/null > /dev/null"
+		INSTALL_COMMAND="sudo pacman -S --noconfirm $PACKAGE_LIST 2>/dev/null > /dev/null"
+		
+    	fi
 
 	if [ "$ARCH" == "aarch64" ] && [ "$CHECK_ANDROID" == "Android" ]; then # Permet de rendre les appareils Android sous Termux compatibles
-		
-		WHOIS_PKG="inetutils"
-		CHECK_COMMAND="dpkg -s dnsutils nmap $WHOIS_PKG 2>/dev/null > /dev/null"
-		INSTALL_COMMAND="apt update && apt install -y dnsutils nmap $WHOIS_PKG 2>/dev/null > /dev/null"
-		echo $INSTALL_COMMAND
+		PACKAGE_LIST="dnsutils nmap inetutils ncurses-utils"
+		CHECK_COMMAND="dpkg -s $PACKAGE_LIST 2>/dev/null > /dev/null"
+		INSTALL_COMMAND="apt update 2>/dev/null > /dev/null && apt install -y $PACKAGE_LIST 2>/dev/null > /dev/null"
 
 
 	fi
 
 
 
-	eval $CHECK_COMMAND
+	eval $CHECK_COMMAND #Check si les packages sont installés
 	if [ $? -eq 0 ]; then
 			
 		echo -e "	${GREEN}Dépendances => OK${NOCOLOR}"
@@ -72,7 +70,7 @@ install_packages(){
 		
 		echo -e "${YELLOW}Installation des dépendances en cours...${NOCOLOR}"
 
-		eval $INSTALL_COMMAND
+		eval $INSTALL_COMMAND #Installe les packages
 		if [ $? -eq 0 ]; then
 			echo -e "	${GREEN}Dépendances => installées${NOCOLOR}"
 			echo ""
@@ -106,20 +104,26 @@ getIPandLocate(){
 	echo ""
 	for IPV4 in "${Liste_IPV4[@]}"
 		do
-			localisation=$(timeout --foreground 5 curl -s http://ip-api.com/json/$IPV4)
-			localisation=$(echo $localisation | grep -Eo "city.*" | cut -d'"' -f 3)
+			localisation_json=$(timeout --foreground 5 curl -s http://ip-api.com/json/$IPV4)
+			pays=$(echo $localisation_json | jq -r '.country')
+			region=$(echo $localisation_json | jq -r '.region')
+			ville=$(echo $localisation_json | jq -r '.city')
+			CP=$(echo $localisation_json | jq -r '.zip')
 			echo -e "	${GREEN}[+]${NOCOLOR} IPV4 : ${GREEN}$IPV4${NOCOLOR}"
 			
-			if [ "$localisation" == *"fail"* ]; then
+			if [ "$localisation_json" == *"fail"* ]; then
 				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${RED}Indisponible${NOCOLOR}"
 				echo ""
 				
-			elif [ "$localisation" == "" ]; then
+			elif [ "$localisation_json" == "" ]; then
 				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${RED}Indisponible${NOCOLOR}"
 				echo ""
 			
 			else
-				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${GREEN}$localisation${NOCOLOR}"
+				echo -e "		${YELLOW}[+]${NOCOLOR} Pays : ${GREEN}$pays${NOCOLOR}"
+				echo -e "		${YELLOW}[+]${NOCOLOR} Region : ${GREEN}$region${NOCOLOR}"
+				echo -e "		${YELLOW}[+]${NOCOLOR} Ville : ${GREEN}$ville${NOCOLOR}"
+				echo -e "		${YELLOW}[+]${NOCOLOR} CP : ${GREEN}$CP${NOCOLOR}"
 				echo ""
 			fi
 
@@ -127,20 +131,26 @@ getIPandLocate(){
 
 	for IPV6 in "${Liste_IPV6[@]}"
 		do
-			localisation=$(timeout --foreground 5 curl -s http://ip-api.com/json/$IPV6)
-			localisation=$(echo $localisation | grep -Eo "city.*" | cut -d'"' -f 3)
+			localisation_json=$(timeout --foreground 5 curl -s http://ip-api.com/json/$IPV6)
+			pays=$(echo $localisation_json | jq -r '.country')
+			region=$(echo $localisation_json | jq -r '.region')
+			ville=$(echo $localisation_json | jq -r '.city')
+			CP=$(echo $localisation_json | jq -r '.zip')
 			echo -e "	${GREEN}[+]${NOCOLOR} IPV6 : ${GREEN}$IPV6${NOCOLOR}"
 			
-			if [ "$localisation" == *"fail"* ]; then
+			if [ "$localisation_json" == *"fail"* ]; then
 				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${RED}Indisponible${NOCOLOR}"
 				echo ""
 				
-			elif [ "$localisation" == "" ]; then
+			elif [ "$localisation_json" == "" ]; then
 				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${RED}Indisponible${NOCOLOR}"
 				echo ""
 			
 			else
-				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${GREEN}$localisation${NOCOLOR}"
+				echo -e "		${YELLOW}[+]${NOCOLOR} Pays : ${GREEN}$pays${NOCOLOR}"
+				echo -e "		${YELLOW}[+]${NOCOLOR} Region : ${GREEN}$region${NOCOLOR}"
+				echo -e "		${YELLOW}[+]${NOCOLOR} Ville : ${GREEN}$ville${NOCOLOR}"
+				echo -e "		${YELLOW}[+]${NOCOLOR} CP : ${GREEN}$CP${NOCOLOR}"
 				echo ""
 			fi
 		done
