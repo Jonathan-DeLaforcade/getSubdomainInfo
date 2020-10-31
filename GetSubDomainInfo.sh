@@ -29,7 +29,7 @@ install_packages(){
   	PACMAN_PM=$(which pacman 2>/dev/null)
 	ARCH=$(lscpu -J |grep "Architecture" |cut -d'"' -f 8)
 	
-	PACKAGE_LIST="dnsutils nmap whois"
+	PACKAGE_LIST="dnsutils nmap whois jq"
 	
 	CHECK_ANDROID=$(uname -a |cut -d' ' -f 14)
 	
@@ -50,7 +50,7 @@ install_packages(){
     	fi
 
 	if [ "$ARCH" == "aarch64" ] && [ "$CHECK_ANDROID" == "Android" ]; then # Permet de rendre les appareils Android sous Termux compatibles
-		PACKAGE_LIST="dnsutils nmap inetutils ncurses-utils"
+		PACKAGE_LIST="dnsutils nmap inetutils ncurses-utils jq"
 		CHECK_COMMAND="dpkg -s $PACKAGE_LIST 2>/dev/null > /dev/null"
 		INSTALL_COMMAND="apt update 2>/dev/null > /dev/null && apt install -y $PACKAGE_LIST 2>/dev/null > /dev/null"
 
