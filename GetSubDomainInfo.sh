@@ -104,20 +104,26 @@ getIPandLocate(){
 	echo ""
 	for IPV4 in "${Liste_IPV4[@]}"
 		do
-			localisation=$(timeout --foreground 5 curl -s http://ip-api.com/json/$IPV4)
-			localisation=$(echo $localisation | grep -Eo "city.*" | cut -d'"' -f 3)
+			localisation_json=$(timeout --foreground 5 curl -s http://ip-api.com/json/$IPV4)
+			pays=$(echo $localisation_json | jq -r '.country')
+			region=$(echo $localisation_json | jq -r '.region')
+			ville=$(echo $localisation_json | jq -r '.city')
+			CP=$(echo $localisation_json | jq -r '.zip')
 			echo -e "	${GREEN}[+]${NOCOLOR} IPV4 : ${GREEN}$IPV4${NOCOLOR}"
 			
-			if [ "$localisation" == *"fail"* ]; then
+			if [ "$localisation_json" == *"fail"* ]; then
 				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${RED}Indisponible${NOCOLOR}"
 				echo ""
 				
-			elif [ "$localisation" == "" ]; then
+			elif [ "$localisation_json" == "" ]; then
 				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${RED}Indisponible${NOCOLOR}"
 				echo ""
 			
 			else
-				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${GREEN}$localisation${NOCOLOR}"
+				echo -e "		${YELLOW}[+]${NOCOLOR} Pays : ${GREEN}$pays${NOCOLOR}"
+				echo -e "		${YELLOW}[+]${NOCOLOR} Region : ${GREEN}$region${NOCOLOR}"
+				echo -e "		${YELLOW}[+]${NOCOLOR} Ville : ${GREEN}$ville${NOCOLOR}"
+				echo -e "		${YELLOW}[+]${NOCOLOR} CP : ${GREEN}$CP${NOCOLOR}"
 				echo ""
 			fi
 
@@ -125,20 +131,26 @@ getIPandLocate(){
 
 	for IPV6 in "${Liste_IPV6[@]}"
 		do
-			localisation=$(timeout --foreground 5 curl -s http://ip-api.com/json/$IPV6)
-			localisation=$(echo $localisation | grep -Eo "city.*" | cut -d'"' -f 3)
+			localisation_json=$(timeout --foreground 5 curl -s http://ip-api.com/json/$IPV6)
+			pays=$(echo $localisation_json | jq -r '.country')
+			region=$(echo $localisation_json | jq -r '.region')
+			ville=$(echo $localisation_json | jq -r '.city')
+			CP=$(echo $localisation_json | jq -r '.zip')
 			echo -e "	${GREEN}[+]${NOCOLOR} IPV6 : ${GREEN}$IPV6${NOCOLOR}"
 			
-			if [ "$localisation" == *"fail"* ]; then
+			if [ "$localisation_json" == *"fail"* ]; then
 				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${RED}Indisponible${NOCOLOR}"
 				echo ""
 				
-			elif [ "$localisation" == "" ]; then
+			elif [ "$localisation_json" == "" ]; then
 				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${RED}Indisponible${NOCOLOR}"
 				echo ""
 			
 			else
-				echo -e "		${YELLOW}[+]${NOCOLOR} Localisation : ${GREEN}$localisation${NOCOLOR}"
+				echo -e "		${YELLOW}[+]${NOCOLOR} Pays : ${GREEN}$pays${NOCOLOR}"
+				echo -e "		${YELLOW}[+]${NOCOLOR} Region : ${GREEN}$region${NOCOLOR}"
+				echo -e "		${YELLOW}[+]${NOCOLOR} Ville : ${GREEN}$ville${NOCOLOR}"
+				echo -e "		${YELLOW}[+]${NOCOLOR} CP : ${GREEN}$CP${NOCOLOR}"
 				echo ""
 			fi
 		done
